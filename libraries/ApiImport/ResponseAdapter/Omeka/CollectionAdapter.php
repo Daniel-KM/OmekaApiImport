@@ -10,19 +10,29 @@ class ApiImport_ResponseAdapter_Omeka_CollectionAdapter extends ApiImport_Respon
      */
     public function import()
     {
+        debug(print_r($this->responseData, true));
+        debug('start collection import');
         $collectionMetadata = $this->collectionMetadata();
+        debug(print_r($collectionMetadata, true));
         $elementTexts = $this->elementTexts();
+        debug(print_r($elementTexts, true));
         if($this->record && $this->record->exists()) {
+            debug('updating');
             $collectionMetadata['overwriteElementTexts'] = true;
             update_collection($this->record, $collectionMetadata, $elementTexts);
+            debug('done update');
         } else {
             try {
+                debug('inserting');
                 $this->record = insert_collection($collectionMetadata, $elementTexts);
+                debug('done insert');
             } catch(Exception $e) {
                 _log($e);
             }
+            debug('before add map');
             $this->addOmekaApiImportRecordIdMap();
         }
+        debug('done');
     }
 
     /**
